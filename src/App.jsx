@@ -6,28 +6,37 @@ import Split from 'react-split';
 import { nanoid } from 'nanoid';
 
 export default function App() {
-    const [notes, setNotes] = React.useState([]);
+    // lazy initializtion
+    const [notes, setNotes] = React.useState(
+        () => JSON.parse(localStorage.getItem('notes')) || []
+    );
     const [currentNoteId, setCurrentNoteId] = React.useState(
         (notes[0] && notes[0].id) || ''
     );
 
+    React.useEffect(() => {
+        localStorage.setItem('notes', JSON.stringify(notes));
+    }, [notes]);
+
     function createNewNote() {
         const newNote = {
             id: nanoid(),
-            body: "# Type your markdown note's title here",
+            body: '# Untitled',
         };
-        setNotes((prevNotes) => [...prevNotes, newNote]);
+        setNotes((prevNotes) => [newNote, ...prevNotes]);
         setCurrentNoteId(newNote.id);
     }
 
     function updateNote(text) {
-        setNotes((oldNotes) =>
-            oldNotes.map((oldNote) => {
-                return oldNote.id === currentNoteId
-                    ? { ...oldNote, body: text }
-                    : oldNote;
-            })
-        );
+        setNotes((oldNotes) => {
+            const arr = [];
+            oldNotes.forEach((oldNote) => {
+                oldNote.id === currentNoteId
+                    ? arr.unshift({ ...oldNote, body: text })
+                    : arr.push(oldNote);
+            });
+            return arr;
+        });
     }
 
     function findCurrentNote() {
@@ -42,7 +51,7 @@ export default function App() {
         <main>
             {notes.length > 0 ? (
                 <Split
-                    sizes={[20, 80]}
+                    sizes={[30, 70]}
                     direction="horizontal"
                     className="split"
                 >
