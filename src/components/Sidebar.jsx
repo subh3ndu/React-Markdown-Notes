@@ -14,6 +14,13 @@ export default function Sidebar(props) {
                     <h4 className="text-snippet">
                         {index + 1}. {header.split('\n')[0]}
                     </h4>
+                    <button
+                        className="delete-btn"
+                        onClick={(event) => props.deleteNote(event, note.id)}
+                        // Your onClick event handler here
+                    >
+                        <i className="gg-trash trash-icon"></i>
+                    </button>
                 </div>
             </div>
         );
